@@ -46,6 +46,12 @@ class Logout(Resource):
         session['user_id'] = None
         return {'message': '204: No Content'}, 204
 
+@app.before_request
+def check_if_logged_in():
+    # guard clause to ensure user is logged in
+    if not session.get("user_id") and request.endpoint != 'document_list':
+        return {'error': 'Unauthorized'}, 401
+
 class Document(Resource):
     def get(self, id):
         document = Document.query.filter(Document.id == id).first()
